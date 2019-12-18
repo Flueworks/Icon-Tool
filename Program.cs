@@ -4,32 +4,93 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 
 namespace IconUtil
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            // Usecase 1: Run the tool in a folder to gather all the png files starting with x and combine them into an icon file
+            var createCommand = SetupCreateCommand();
 
-            var outputFile = args.FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(outputFile))
+            var extractCommand = new Command("extract", "Extracts the icons from an ico file");
+            extractCommand.Handler = CommandHandler.Create(() =>
             {
-                outputFile = "icon.ico";
+                Console.WriteLine("Extract - Not implemented yet");
+            });
+
+            var rootCommand = new RootCommand
+            {
+                createCommand,
+                extractCommand,
+            };
+
+            return rootCommand.InvokeAsync(args).Result;
+        }
+
+        private static Command SetupCreateCommand()
+        {
+            var createCommand = new Command("create", "Creates an icon");
+
+            var outputOption = new Option<FileInfo>("--output")
+            {
+                Argument = new Argument<FileInfo>(() => new FileInfo("icon.ico")),
+                Required = false,
+            };
+            outputOption.AddAlias("-o");
+            createCommand.AddOption(outputOption);
+
+
+            var sourceOption = new Option<DirectoryInfo>("--source")
+            {
+                Argument = new Argument<DirectoryInfo>(),
+                Required = false,
+            };
+            sourceOption.AddAlias("-s");
+            createCommand.AddOption(sourceOption);
+
+
+            var imagesOption = new Option<IEnumerable<FileInfo>>("--images")
+            {
+                Argument = new Argument<IEnumerable<FileInfo>>(),
+                Required = false
+            };
+            imagesOption.AddAlias("-i");
+            createCommand.AddOption(imagesOption);
+
+            createCommand.Handler = CommandHandler.Create<FileInfo, DirectoryInfo, IEnumerable<FileInfo>>(Create);
+
+            return createCommand;
+        }
+
+        private static void Create(FileInfo output, DirectoryInfo source, IEnumerable<FileInfo> images)
+        {
+            bool createFromFolder = images == null;
+
+            using var stream = output.OpenWrite();
+            if (createFromFolder)
+            {
+                if (source == null)
+                {
+                    source = new DirectoryInfo(".");
+                }
+                if (source.Exists)
+                {
+                    Console.WriteLine($"Creating icon at {output.Name} from folder {source.Name}");
+                    var icon = CreateIconFromDirectory(source.FullName);
+                    icon.Write(stream);
+                }
+                else
+                {
+                    throw new ArgumentException("Could not find part of the path");
+                }
             }
-
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var icon = CreateIconFromDirectory(currentDirectory);
-
-            try
+            else
             {
-                using var fileStream = File.OpenWrite(outputFile);
-                icon.Write(fileStream);
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.Message);
+                var icon = GenerateIconFromFiles(images.Select(x => x.FullName));
+                icon.Write(stream);
             }
         }
 
@@ -67,6 +128,11 @@ namespace IconUtil
                 {
                     continue;
                 }
+            }
+
+            if (acceptedFiles.Count == 0)
+            {
+                throw new Exception("Could not find any suitable images");
             }
 
             var icon = GenerateIconFromFiles(acceptedFiles);

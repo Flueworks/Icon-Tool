@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "IconTool": {
+      "commandName": "Project",
+      "commandLineArgs": "create"
+    }
+  }
+}
