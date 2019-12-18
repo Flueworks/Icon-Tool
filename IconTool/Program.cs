@@ -1,33 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.CommandLine;
-using System.CommandLine.Invocation;
+using Icon = IconTool.IconModel.Icon;
+using Image = IconTool.IconModel.Image;
 
-namespace IconUtil
+namespace IconTool
 {
     class Program
     {
         static int Main(string[] args)
         {
-            var createCommand = SetupCreateCommand();
-
-            var extractCommand = new Command("extract", "Extracts the icons from an ico file");
-            extractCommand.Handler = CommandHandler.Create(() =>
-            {
-                Console.WriteLine("Extract - Not implemented yet");
-            });
-
             var rootCommand = new RootCommand
             {
-                createCommand,
-                extractCommand,
+                SetupCreateCommand(),
+                SetupExtractCommand(),
             };
 
+            rootCommand.Description = "Utility to create icons and extract images from icon files";
+
             return rootCommand.InvokeAsync(args).Result;
+        }
+
+        private static Command SetupExtractCommand()
+        {
+            var extractCommand = new Command("extract", "Extracts the icons from an ico file");
+            extractCommand.Handler = CommandHandler.Create(() => { Console.WriteLine("Extract - Not implemented yet"); });
+            return extractCommand;
         }
 
         private static Command SetupCreateCommand()
@@ -89,6 +92,7 @@ namespace IconUtil
             }
             else
             {
+                Console.WriteLine($"Creating icon at {output.Name} from {images.Count()} images");
                 var icon = GenerateIconFromFiles(images.Select(x => x.FullName));
                 icon.Write(stream);
             }
