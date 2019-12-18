@@ -82,7 +82,7 @@ namespace IconTool
                 if (source.Exists)
                 {
                     Console.WriteLine($"Creating icon at {output.Name} from folder {source.Name}");
-                    var icon = CreateIconFromDirectory(source.FullName);
+                    var icon = IconCreator.CreateIconFromDirectory(source.FullName);
                     icon.Write(stream);
                 }
                 else
@@ -93,11 +93,14 @@ namespace IconTool
             else
             {
                 Console.WriteLine($"Creating icon at {output.Name} from {images.Count()} images");
-                var icon = GenerateIconFromFiles(images.Select(x => x.FullName));
+                var icon = IconCreator.CreateIconFromFiles(images.Select(x => x.FullName));
                 icon.Write(stream);
             }
         }
+    }
 
+    public static class IconCreator
+    {
         /// <summary>
         /// Creates an icon from all .png files matching the regex x\d+\.png in the specified directory.
         /// </summary>
@@ -107,7 +110,7 @@ namespace IconTool
         /// <exception cref="UnauthorizedAccessException"></exception>
         /// <exception cref="PathTooLongException"></exception>
         /// <exception cref="DirectoryNotFoundException"></exception>
-        private static Icon CreateIconFromDirectory(string directory)
+        public static Icon CreateIconFromDirectory(string directory)
         {
             var files = Directory.GetFiles(directory, "x*.png");
 
@@ -139,12 +142,12 @@ namespace IconTool
                 throw new Exception("Could not find any suitable images");
             }
 
-            var icon = GenerateIconFromFiles(acceptedFiles);
+            var icon = CreateIconFromFiles(acceptedFiles);
 
             return icon;
         }
 
-        private static Icon GenerateIconFromFiles(IEnumerable<string> files)
+        public static Icon CreateIconFromFiles(IEnumerable<string> files)
         {
             Icon icon = new Icon { Type = 1 };
 
@@ -171,11 +174,6 @@ namespace IconTool
             return icon;
         }
 
-        /// <summary>
-        /// CreateImageFromFile
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
         /// <exception cref="PathTooLongException"></exception>
         /// <exception cref="DirectoryNotFoundException"></exception>
         /// <exception cref="IOException"></exception>

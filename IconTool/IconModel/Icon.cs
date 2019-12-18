@@ -3,7 +3,7 @@ using System.IO;
 
 namespace IconTool.IconModel
 {
-    class Icon
+    public class Icon
     {
         public short Reserved { get; private set; } = 0; // Must always be 0
         public short Type { get; set; } = 1; // 1 = .ico, 2 = .cur

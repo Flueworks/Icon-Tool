@@ -2,7 +2,7 @@
 
 namespace IconTool.IconModel
 {
-    class Image
+    public class Image
     {
         public byte Height { get; set; }
         public byte Width { get; set; }
