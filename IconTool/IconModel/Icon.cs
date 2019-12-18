@@ -11,23 +11,25 @@ namespace IconTool.IconModel
 
         public List<Image> Images { get; set; } = new List<Image>();
 
-        public void Read(Stream stream)
+        public static Icon Load(Stream stream)
         {
+            Icon icon = new Icon();
             BinaryReader reader = new BinaryReader(stream);
 
-            Reserved = reader.ReadInt16();
-            Type = reader.ReadInt16();
-            Count = reader.ReadInt16();
+            icon.Reserved = reader.ReadInt16();
+            icon.Type = reader.ReadInt16();
+            icon.Count = reader.ReadInt16();
 
-            Images = new List<Image>(Count);
+            icon.Images = new List<Image>(icon.Count);
 
-            for (int j = 0; j < Count; j++)
+            for (int j = 0; j < icon.Count; j++)
             {
                 Image img = new Image();
                 img.Read(stream);
-                Images.Add(img);
+                icon.Images.Add(img);
             }
 
+            return icon;
         }
 
         public void Write(Stream stream)

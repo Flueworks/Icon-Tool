@@ -14,6 +14,7 @@ namespace IconTool.IconModel
         /// In CUR format: Specifies the horizontal coordinates of the hotspot in number of pixels from the left.
         /// </summary>
         public short Planes { get; set; }
+
         /// <summary>
         /// In ICO format: Specifies bits per pixel. If the images are png, this data is stored in the png data
         /// In CUR format: Specifies the vertical coordinates of the hotspot in number of pixels from the top.

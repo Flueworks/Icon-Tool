@@ -11,12 +11,7 @@ namespace IconTool.Tests
         {
             ExpectedFullIcon = File.ReadAllBytes("FullIcon.ico");
             Expected3Icons = File.ReadAllBytes("3Icons.ico");
-
-            Icon3 = new Icon();
-            Icon3.Read(new MemoryStream(Expected3Icons));
         }
-
-        public Icon Icon3 { get; set; }
 
         public byte[] Expected3Icons { get; set; }
 

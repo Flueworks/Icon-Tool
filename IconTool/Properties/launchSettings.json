@@ -1,8 +1,12 @@
 {
   "profiles": {
-    "IconTool": {
+    "Create": {
       "commandName": "Project",
-      "commandLineArgs": "create"
+      "commandLineArgs": "create --source C:/Users/akvitberg/Desktop/Icon/ --output C:/Users/akvitberg/Desktop/Icon/icon.ico"
+    },
+    "Extract": {
+      "commandName": "Project",
+      "commandLineArgs": "extract --source C:/Users/akvitberg/Desktop/Icon/icon.ico --output C:/Users/akvitberg/Desktop/Icon/icon"
     }
   }
 }
